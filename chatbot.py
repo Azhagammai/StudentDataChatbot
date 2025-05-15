@@ -53,7 +53,7 @@ try:
     ]
     
     model = genai.GenerativeModel(
-        model_name="gemini-1.0-pro",
+        model_name="gemini-pro",
         generation_config=generation_config,
         safety_settings=safety_settings
     )
@@ -225,8 +225,18 @@ def process_student_query(query, student_id):
     """
     
     try:
-        response = model.generate_content(prompt)
-        return response.text
+        if model is None:
+            logger.error("Gemini model not initialized")
+            return "I'm sorry, I'm having trouble accessing my knowledge base right now. Please try again later."
+        
+        # Generate response safely
+        generation_response = model.generate_content(prompt)
+        
+        if generation_response and hasattr(generation_response, 'text'):
+            return generation_response.text
+        else:
+            logger.error(f"Invalid response format: {generation_response}")
+            return "I'm sorry, I couldn't generate a proper response. Please try a different question."
     except Exception as e:
         logger.error(f"Gemini API error: {str(e)}")
         return "I'm sorry, I'm having trouble processing your request right now. Please try again later."
@@ -297,8 +307,18 @@ def process_admin_query(query):
     """
     
     try:
-        response = model.generate_content(prompt)
-        return response.text
+        if model is None:
+            logger.error("Gemini model not initialized")
+            return "I'm sorry, I'm having trouble accessing my knowledge base right now. Please try again later."
+        
+        # Generate response safely
+        generation_response = model.generate_content(prompt)
+        
+        if generation_response and hasattr(generation_response, 'text'):
+            return generation_response.text
+        else:
+            logger.error(f"Invalid response format: {generation_response}")
+            return "I'm sorry, I couldn't generate a proper response. Please try a different question."
     except Exception as e:
         logger.error(f"Gemini API error: {str(e)}")
         return "I'm sorry, I'm having trouble processing your request right now. Please try again later."

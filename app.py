@@ -49,16 +49,18 @@ with app.app_context():
     
     # Create admin user if not exists
     from models import User, Student
-    admin = User.query.filter_by(email="admin@example.com").first()
+    admin = db.session.query(User).filter(User.email == "admin@example.com").first()
     if not admin:
-        admin = User(email="admin@example.com", is_admin=True)
+        admin = User()
+        admin.email = "admin@example.com"
+        admin.is_admin = True
         admin.set_password("admin123")
         db.session.add(admin)
         db.session.commit()
         logger.info("Admin user created.")
     
     # Import students from CSV if not exists
-    if Student.query.count() == 0:
+    if db.session.query(Student).count() == 0:
         try:
             import pandas as pd
             import os

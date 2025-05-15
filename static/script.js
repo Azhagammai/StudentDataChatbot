@@ -304,8 +304,8 @@ function loadStudentList() {
 
 // Function to delete a student
 function deleteStudent(studentId) {
-    fetch(`/admin/students/${studentId}`, {
-        method: 'DELETE'
+    fetch(`/admin/delete_student/${studentId}`, {
+        method: 'POST'
     })
     .then(response => response.json())
     .then(data => {

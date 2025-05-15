@@ -83,8 +83,41 @@ def login_required(user_type):
 @chatbot_bp.route('/chat', methods=['GET'])
 @login_required('student')
 def chat():
-    student_name = session.get('student_name', 'Student')
-    return render_template('chat.html', student_name=student_name)
+    try:
+        # Get student information
+        student_id = session.get('user_id')
+        student = db.session.query(Student).filter(Student.id == student_id).first()
+        if not student:
+            flash('Student information not found. Please login again.', 'danger')
+            return redirect(url_for('login.login_page'))
+            
+        student_name = student.name if student.name else f"Student {student.serial_no}"
+        
+        # Get student's chat history
+        chat_history = db.session.query(ChatLog).filter(
+            ChatLog.user_type == 'student',
+            ChatLog.user_id == student_id
+        ).order_by(ChatLog.timestamp.desc()).limit(10).all()
+        
+        # Format chat history for display
+        formatted_history = []
+        for log in chat_history:
+            formatted_history.append({
+                'query': log.query,
+                'response': log.response,
+                'timestamp': log.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            })
+        
+        # Pass data to template
+        return render_template('chat.html', 
+                            student_name=student_name,
+                            student=student,
+                            chat_history=formatted_history)
+                            
+    except Exception as e:
+        logger.error(f"Error loading chat page: {str(e)}")
+        flash('An error occurred while loading the chat. Please try again.', 'danger')
+        return redirect(url_for('login.login_page'))
 
 @chatbot_bp.route('/admin/chat', methods=['GET'])
 @login_required('admin')
@@ -282,19 +315,19 @@ def process_admin_query(query):
     Based on the available data, here is what I know:
     
     Student data summary:
-    - Total students: {Student.query.count()}
-    - Students with attendance below 70%: {sum(1 for s in Student.query.all() if s.total_days > 0 and (s.days_present / s.total_days) < 0.7)}
-    - Students with GPA above 7: {Student.query.filter(Student.current_gpa > 7).count()}
+    - Total students: {db.session.query(Student).count()}
+    - Students with attendance below 70%: {sum(1 for s in db.session.query(Student).all() if s.total_days > 0 and (s.days_present / s.total_days) < 0.7)}
+    - Students with GPA above 7: {db.session.query(Student).filter(Student.current_gpa > 7).count()}
     
     Uploaded files:
-    - Total files: {UploadedFile.query.count()}
-    - CSV files: {UploadedFile.query.filter_by(file_type='csv').count()}
-    - PDF files: {UploadedFile.query.filter_by(file_type='pdf').count()}
+    - Total files: {db.session.query(UploadedFile).count()}
+    - CSV files: {db.session.query(UploadedFile).filter(UploadedFile.file_type == 'csv').count()}
+    - PDF files: {db.session.query(UploadedFile).filter(UploadedFile.file_type == 'pdf').count()}
     
     Chat logs:
-    - Total queries: {ChatLog.query.count()}
-    - Student queries: {ChatLog.query.filter_by(user_type='student').count()}
-    - Admin queries: {ChatLog.query.filter_by(user_type='admin').count()}
+    - Total queries: {db.session.query(ChatLog).count()}
+    - Student queries: {db.session.query(ChatLog).filter(ChatLog.user_type == 'student').count()}
+    - Admin queries: {db.session.query(ChatLog).filter(ChatLog.user_type == 'admin').count()}
     
     Student Information (if requested):
     {students_data if students_data else "No specific student data requested."}

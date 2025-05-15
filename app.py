@@ -79,7 +79,8 @@ with app.app_context():
                             student_data[f'sem{semester_num}'] = row[column]
                         elif hasattr(Student, column.lower().replace(' ', '_')):
                             student_data[column.lower().replace(' ', '_')] = row[column]
-                        elif column.lower().replace(' ', '_') in [c.key for c in Student.__table__.columns]:
+                        # Access column names using inspection
+                        elif column.lower().replace(' ', '_') in [c.name for c in Student.__mapper__.columns]:
                             student_data[column.lower().replace(' ', '_')] = row[column]
                         elif hasattr(Student, column):
                             student_data[column] = row[column]

@@ -1,0 +1,110 @@
+Student & Admin Chatbot Web App (Modular Flask Project)
+📌 New Enhancements:
+✅ Admin can upload new data files (e.g., new CSVs or PDFs)
+
+🤖 Student chatbot fetches answers from:
+
+students.csv
+
+report.pdf
+
+Any new uploaded file by admin
+
+🧠 Gemini API generates accurate, relevant answers
+
+🧹 Modularized Code:
+
+login.py → Handles authentication
+
+chatbot.py → All chatbot logic (tokenization + Gemini API)
+
+admin.py → Admin dashboard, file uploads, analytics
+
+app.py → Main Flask app and route manager
+
+📂 Final Folder Structure:
+bash
+Copy
+Edit
+/templates/
+  ├── login.html
+  ├── chat.html
+  ├── admin.html
+  ├── admin_chat.html
+  └── upload.html
+
+/static/
+  └── style.css
+
+/data/
+  ├── students.csv          # Main student data
+  ├── report.pdf            # Academic report
+  └── uploads/              # Admin-uploaded files
+
+/app.py
+/login.py
+/chatbot.py
+/admin.py
+/database.db
+/requirements.txt
+/.env
+🛠️ Features Summary:
+🧑‍🎓 Student Portal:
+Login with serial_number + roll_number
+
+Ask questions like:
+
+"What is my attendance?"
+
+"What is my math grade?"
+
+"Show my performance in PDF report"
+
+Chatbot uses Gemini + tokenization to understand context
+
+Data sourced from CSV, PDF, and any uploaded files
+
+👨‍💼 Admin Dashboard:
+Secure login with email/password
+
+Upload new data files (CSV or PDF)
+
+Add/edit/delete students
+
+View analytics (daily chat usage)
+
+Chatbot for admins to:
+
+"List students with attendance < 70%"
+
+"Students with grade A in Science"
+
+🧠 Chatbot Logic:
+Uses nltk word tokenization
+
+Extracts entities and keywords
+
+Searches all data sources
+
+Constructs a context and sends it to Gemini
+
+Gemini responds with clean natural language output
+
+📦 requirements.txt
+txt
+Copy
+Edit
+flask
+flask-session
+flask-sqlalchemy
+pandas
+pdfplumber
+google-generativeai
+python-dotenv
+nltk
+werkzeug
+🔐 Environment Variable (.env)
+ini
+Copy
+Edit
+GEMINI_API_KEY=AIzaSyBWBxsPBykuJ6z_kMYlAq9k9u3YU2Uy8Oc

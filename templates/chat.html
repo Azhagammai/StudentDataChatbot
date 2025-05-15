@@ -50,6 +50,22 @@
                             </ul>
                             How can I help you today?
                         </div>
+                        
+                        {% if chat_history %}
+                            <!-- Display recent chat history -->
+                            <div class="message system-message">
+                                <strong>Recent Conversations</strong>
+                            </div>
+                            
+                            {% for chat in chat_history %}
+                                <div class="message user-message">
+                                    {{ chat.query }}
+                                </div>
+                                <div class="message bot-message">
+                                    {{ chat.response }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     
                     <div class="chat-input">

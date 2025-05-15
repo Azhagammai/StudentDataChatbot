@@ -122,7 +122,51 @@ def chat():
 @chatbot_bp.route('/admin/chat', methods=['GET'])
 @login_required('admin')
 def admin_chat():
-    return render_template('admin_chat.html')
+    try:
+        # Get admin information
+        admin_id = session.get('user_id')
+        # Import the User model here to avoid circular imports
+        from models import User
+        admin = db.session.query(User).filter(User.id == admin_id).first()
+        if not admin:
+            flash('Admin information not found. Please login again.', 'danger')
+            return redirect(url_for('login.login_page'))
+        
+        admin_email = admin.email
+        
+        # Get admin's recent chat history
+        chat_history = db.session.query(ChatLog).filter(
+            ChatLog.user_type == 'admin',
+            ChatLog.user_id == admin_id
+        ).order_by(ChatLog.timestamp.desc()).limit(10).all()
+        
+        # Format chat history for display
+        formatted_history = []
+        for log in chat_history:
+            formatted_history.append({
+                'query': log.query,
+                'response': log.response,
+                'timestamp': log.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            })
+            
+        # Get summary stats for admin dashboard
+        student_count = db.session.query(Student).count()
+        file_count = db.session.query(UploadedFile).count()
+        chat_count = db.session.query(ChatLog).count()
+        
+        return render_template('admin_chat.html', 
+                            admin_email=admin_email,
+                            chat_history=formatted_history,
+                            stats={
+                                'student_count': student_count,
+                                'file_count': file_count,
+                                'chat_count': chat_count
+                            })
+    
+    except Exception as e:
+        logger.error(f"Error loading admin chat page: {str(e)}")
+        flash('An error occurred while loading the admin chat. Please try again.', 'danger')
+        return redirect(url_for('login.login_page'))
 
 @chatbot_bp.route('/api/chat', methods=['POST'])
 def process_chat():

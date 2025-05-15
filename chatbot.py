@@ -25,7 +25,8 @@ except LookupError:
 logger = logging.getLogger(__name__)
 
 # Set up Gemini API
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY", "AIzaSyBWBxsPBykuJ6z_kMYlAq9k9u3YU2Uy8Oc"))
+api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBWBxsPBykuJ6z_kMYlAq9k9u3YU2Uy8Oc")
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-pro')
 
 # Create blueprint
@@ -235,20 +236,28 @@ def process_admin_query(query):
 
 def extract_code_of_conduct():
     try:
-        # Read the code of conduct file (placeholder - would need to be loaded from a file)
-        with open(os.path.join(os.getcwd(), "data", "code_of_conduct.txt"), "r") as f:
-            return f.read()
-    except FileNotFoundError:
-        # If file not found, return a generic message about code of conduct
-        return """
-        Students are expected to follow the college code of conduct which includes:
-        - Regular attendance in classes
-        - Maintaining proper dress code
-        - No use of mobile phones in classrooms
-        - Academic honesty
-        - Respectful behavior towards faculty and peers
-        For more details, please refer to the full Code of Conduct document.
-        """
+        # Read the code of conduct file from PDF
+        pdf_path = os.path.join(os.getcwd(), "data", "code_of_conduct.pdf")
+        if os.path.exists(pdf_path):
+            with pdfplumber.open(pdf_path) as pdf:
+                text = ""
+                for page in pdf.pages:
+                    text += page.extract_text() + "\n"
+                return text
+        else:
+            # If PDF not found, return a generic message about code of conduct
+            return """
+            Students are expected to follow the college code of conduct which includes:
+            - Regular attendance in classes
+            - Maintaining proper dress code
+            - No use of mobile phones in classrooms
+            - Academic honesty
+            - Respectful behavior towards faculty and peers
+            For more details, please refer to the full Code of Conduct document.
+            """
+    except Exception as e:
+        logger.error(f"Error reading code of conduct PDF: {str(e)}")
+        return "Unable to read the code of conduct document due to a technical error. Please refer to the physical copy or ask an administrator."
 
 def get_data_from_uploaded_files(student):
     """Extract relevant data about a student from uploaded files"""

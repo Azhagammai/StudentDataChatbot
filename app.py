@@ -48,7 +48,7 @@ with app.app_context():
     db.create_all()
     
     # Create admin user if not exists
-    from models import User
+    from models import User, Student
     admin = User.query.filter_by(email="admin@example.com").first()
     if not admin:
         admin = User(email="admin@example.com", is_admin=True)
@@ -56,6 +56,49 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
         logger.info("Admin user created.")
+    
+    # Import students from CSV if not exists
+    if Student.query.count() == 0:
+        try:
+            import pandas as pd
+            import os
+            from datetime import datetime
+            
+            students_csv_path = os.path.join(os.getcwd(), "data", "students.csv")
+            if os.path.exists(students_csv_path):
+                df = pd.read_csv(students_csv_path)
+                
+                for _, row in df.iterrows():
+                    student_data = {}
+                    for column in df.columns:
+                        # Handle semester columns which have spaces in names
+                        if column.startswith('Semester'):
+                            semester_num = column.split(' ')[1]
+                            student_data[f'sem{semester_num}'] = row[column]
+                        elif hasattr(Student, column.lower().replace(' ', '_')):
+                            student_data[column.lower().replace(' ', '_')] = row[column]
+                        elif column.lower().replace(' ', '_') in [c.key for c in Student.__table__.columns]:
+                            student_data[column.lower().replace(' ', '_')] = row[column]
+                        elif hasattr(Student, column):
+                            student_data[column] = row[column]
+                    
+                    # Convert date_of_birth to datetime if it's a string
+                    if 'date_of_birth' in student_data and isinstance(student_data['date_of_birth'], str):
+                        try:
+                            student_data['date_of_birth'] = datetime.strptime(student_data['date_of_birth'], '%Y-%m-%d').date()
+                        except:
+                            student_data['date_of_birth'] = None
+                    
+                    try:
+                        student = Student(**student_data)
+                        db.session.add(student)
+                    except Exception as e:
+                        logger.error(f"Error adding student {student_data.get('name')}: {str(e)}")
+                
+                db.session.commit()
+                logger.info(f"Imported {len(df)} students from CSV")
+        except Exception as e:
+            logger.error(f"Error importing students from CSV: {str(e)}")
 
 # Import blueprints
 from login import login_bp

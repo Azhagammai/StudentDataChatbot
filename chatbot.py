@@ -23,7 +23,37 @@ logger = logging.getLogger(__name__)
 # Set up Gemini API
 api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBWBxsPBykuJ6z_kMYlAq9k9u3YU2Uy8Oc")
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-pro')
+
+# Initialize model with safety settings
+safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_ONLY_HIGH"
+    },
+]
+
+try:
+    model = genai.GenerativeModel(
+        model_name='gemini-pro',
+        safety_settings=safety_settings,
+        generation_config={"temperature": 0.2, "top_p": 0.8, "top_k": 40}
+    )
+    logger.info("Gemini AI model initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Gemini AI model: {str(e)}")
+    model = None
 
 # Create blueprint
 chatbot_bp = Blueprint('chatbot', __name__)

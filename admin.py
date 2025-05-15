@@ -76,6 +76,10 @@ def upload():
             
         # Save the file
         try:
+            if file.filename is None:
+                flash('Invalid filename', 'danger')
+                return redirect(request.url)
+                
             filename = secure_filename(file.filename)
             file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
@@ -84,12 +88,11 @@ def upload():
             file_extension = filename.rsplit('.', 1)[1].lower()
             
             # Create record in database
-            uploaded_file = UploadedFile(
-                filename=filename,
-                file_path=file_path,
-                file_type=file_extension,
-                uploaded_by=session['user_id']
-            )
+            uploaded_file = UploadedFile()
+            uploaded_file.filename = filename
+            uploaded_file.file_path = file_path
+            uploaded_file.file_type = file_extension
+            uploaded_file.uploaded_by = session['user_id']
             db.session.add(uploaded_file)
             
             # If it's a CSV, check if it has student data and import
@@ -110,7 +113,7 @@ def upload():
             return redirect(request.url)
     
     # GET request - show upload form
-    files = UploadedFile.query.order_by(UploadedFile.uploaded_at.desc()).all()
+    files = db.session.query(UploadedFile).order_by(UploadedFile.uploaded_at.desc()).all()
     return render_template('upload.html', files=files)
 
 @admin_bp.route('/admin/students', methods=['GET'])
@@ -148,7 +151,20 @@ def delete_student(student_id):
 @admin_required
 def get_chat_logs():
     logs = db.session.query(ChatLog).order_by(ChatLog.timestamp.desc()).all()
-    return jsonify([log.to_dict() for log in logs])
+    
+    # Create a list of dictionaries manually instead of using to_dict()
+    result = [
+        {
+            'id': log.id,
+            'user_type': log.user_type,
+            'user_id': log.user_id,
+            'query': log.query,
+            'response': log.response,
+            'timestamp': log.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for log in logs
+    ]
+    return jsonify(result)
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

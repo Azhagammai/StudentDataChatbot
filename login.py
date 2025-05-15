@@ -59,7 +59,7 @@ def handle_admin_login():
         return render_template('login.html')
         
     # Check if admin exists
-    admin = User.query.filter_by(email=email).first()
+    admin = db.session.query(User).filter(User.email == email).first()
     
     if admin and admin.check_password(password):
         if not admin.is_admin:

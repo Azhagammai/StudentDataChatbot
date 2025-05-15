@@ -21,34 +21,41 @@ except Exception as e:
 logger = logging.getLogger(__name__)
 
 # Set up Gemini API
-api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyBWBxsPBykuJ6z_kMYlAq9k9u3YU2Uy8Oc")
+api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-# Initialize model with safety settings
-safety_settings = [
-    {
-        "category": "HARM_CATEGORY_HARASSMENT",
-        "threshold": "BLOCK_ONLY_HIGH"
-    },
-    {
-        "category": "HARM_CATEGORY_HATE_SPEECH",
-        "threshold": "BLOCK_ONLY_HIGH"
-    },
-    {
-        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        "threshold": "BLOCK_ONLY_HIGH"
-    },
-    {
-        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-        "threshold": "BLOCK_ONLY_HIGH"
-    },
-]
-
+# Initialize model with generation config
 try:
+    generation_config = {
+        "temperature": 0.2,
+        "top_p": 0.8,
+        "top_k": 40,
+        "max_output_tokens": 1024,
+    }
+    
+    safety_settings = [
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+        },
+    ]
+    
     model = genai.GenerativeModel(
-        model_name='gemini-pro',
-        safety_settings=safety_settings,
-        generation_config={"temperature": 0.2, "top_p": 0.8, "top_k": 40}
+        model_name="gemini-1.0-pro",
+        generation_config=generation_config,
+        safety_settings=safety_settings
     )
     logger.info("Gemini AI model initialized successfully")
 except Exception as e:

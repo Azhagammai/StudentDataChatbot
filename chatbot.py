@@ -6,20 +6,16 @@ import google.generativeai as genai
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from flask import Blueprint, render_template, request, session, jsonify, current_app
+from flask import Blueprint, render_template, request, session, jsonify, current_app, flash, redirect, url_for
 from models import db, Student, ChatLog, UploadedFile
 from functools import wraps
 
 # Initialize NLTK components
 try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
     nltk.download('punkt')
-    
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
     nltk.download('stopwords')
+except Exception as e:
+    print(f"Error downloading NLTK data: {str(e)}")
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -38,7 +34,11 @@ def login_required(user_type):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if 'user_type' not in session or session['user_type'] != user_type:
-                return jsonify({'error': 'Unauthorized access'}), 401
+                if user_type == 'student':
+                    flash('You need to be logged in as a student to access this page', 'danger')
+                else:
+                    flash('You need to be logged in as an admin to access this page', 'danger')
+                return redirect(url_for('login.login_page'))
             return f(*args, **kwargs)
         return decorated_function
     return decorator

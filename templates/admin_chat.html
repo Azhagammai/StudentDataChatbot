@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Chat - Educational Chatbot</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">MCET Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Admin Chat</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login.logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h4>Admin Assistant</h4>
+                        <p class="text-muted mb-0">Ask me about student data and educational analytics</p>
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            Hello Admin! I'm your administrative assistant. You can ask me about:
+                            <ul>
+                                <li>Lists of students by various criteria</li>
+                                <li>Student performance and attendance statistics</li>
+                                <li>Summary of academic data</li>
+                                <li>Information about uploaded files</li>
+                            </ul>
+                            How can I help you today?
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <form id="chat-form">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="message-input" placeholder="Type your question here..." autocomplete="off">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Example Questions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-sm btn-outline-secondary example-question">List students with attendance below 70%</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">Show students with GPA above 7</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">How many students are in Computer Science?</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">Show students with highest GPA</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">Summarize uploaded files</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Add click handler for example questions
+        document.querySelectorAll('.example-question').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('message-input').value = this.textContent;
+                // Trigger submit
+                const submitEvent = new Event('submit');
+                document.getElementById('chat-form').dispatchEvent(submitEvent);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Chat - Educational Chatbot</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">MCET Educational Chatbot</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Welcome, {{ student_name }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login.logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h4>Student Assistant</h4>
+                        <p class="text-muted mb-0">Ask me anything about your academic information</p>
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            Hello {{ student_name }}! I'm your personal academic assistant. You can ask me about:
+                            <ul>
+                                <li>Your attendance</li>
+                                <li>Your grades and GPA</li>
+                                <li>Your course information</li>
+                                <li>Your performance in specific subjects</li>
+                                <li>College policies and code of conduct</li>
+                            </ul>
+                            How can I help you today?
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <form id="chat-form">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="message-input" placeholder="Type your question here..." autocomplete="off">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Example Questions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-sm btn-outline-secondary example-question">What is my attendance?</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">What is my current GPA?</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">Which courses am I taking?</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">What is the attendance policy?</button>
+                            <button class="btn btn-sm btn-outline-secondary example-question">Show my semester-wise performance</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Add click handler for example questions
+        document.querySelectorAll('.example-question').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('message-input').value = this.textContent;
+                // Trigger submit
+                const submitEvent = new Event('submit');
+                document.getElementById('chat-form').dispatchEvent(submitEvent);
+            });
+        });
+    </script>
+</body>
+</html>

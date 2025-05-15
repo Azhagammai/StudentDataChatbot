@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Educational Chatbot</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">MCET Admin Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Welcome, Admin</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login.logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid" id="admin-dashboard">
+        <div class="row">
+            <div class="col-md-3 col-lg-2 admin-sidebar">
+                <div class="d-flex flex-column flex-shrink-0 p-3">
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="nav-item">
+                            <a href="#dashboard-section" class="nav-link active" data-bs-toggle="pill">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#students-section" class="nav-link" data-bs-toggle="pill">
+                                <i class="bi bi-people me-2"></i>
+                                Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('admin.upload') }}" class="nav-link">
+                                <i class="bi bi-upload me-2"></i>
+                                Upload Files
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url_for('chatbot.admin_chat') }}" class="nav-link">
+                                <i class="bi bi-chat-dots me-2"></i>
+                                Admin Chat
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#logs-section" class="nav-link" data-bs-toggle="pill">
+                                <i class="bi bi-list-ul me-2"></i>
+                                Chat Logs
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-9 col-lg-10 admin-content">
+                <div class="tab-content">
+                    <!-- Dashboard Section -->
+                    <div class="tab-pane fade show active" id="dashboard-section">
+                        <h2>Dashboard</h2>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h4>Total Students</h4>
+                                    <h2>{{ total_students }}</h2>
+                                    <p class="text-muted mb-0">Registered in the system</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h4>Uploaded Files</h4>
+                                    <h2>{{ total_uploads }}</h2>
+                                    <p class="text-muted mb-0">CSV and PDF documents</p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h4>Chat Interactions</h4>
+                                    <h2>{{ total_chats }}</h2>
+                                    <p class="text-muted mb-0">Questions answered</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="stats-card">
+                                    <h4>Chat Activity (Last 7 Days)</h4>
+                                    <canvas id="chatActivityChart" 
+                                           data-labels='{{ chart_labels|tojson }}' 
+                                           data-values='{{ chart_data|tojson }}'
+                                           height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="stats-card">
+                                    <h4>Quick Actions</h4>
+                                    <div class="d-flex flex-wrap gap-3 mt-3">
+                                        <a href="{{ url_for('admin.upload') }}" class="btn btn-primary">
+                                            <i class="bi bi-upload me-2"></i>Upload New Files
+                                        </a>
+                                        <a href="{{ url_for('chatbot.admin_chat') }}" class="btn btn-info">
+                                            <i class="bi bi-chat-dots me-2"></i>Ask Admin Chatbot
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Students Section -->
+                    <div class="tab-pane fade" id="students-section">
+                        <h2>Student Management</h2>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="stats-card">
+                                    <h4>Student List</h4>
+                                    <div id="student-list">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logs Section -->
+                    <div class="tab-pane fade" id="logs-section">
+                        <h2>Chat Logs</h2>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="stats-card">
+                                    <h4>Recent Interactions</h4>
+                                    <div id="chat-logs">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

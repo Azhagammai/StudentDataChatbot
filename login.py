@@ -34,7 +34,7 @@ def handle_student_login():
         return render_template('login.html')
         
     # Check if student exists
-    student = Student.query.filter_by(serial_no=serial_no, roll_no=roll_no).first()
+    student = db.session.query(Student).filter(Student.serial_no == serial_no, Student.roll_no == roll_no).first()
     
     if student:
         session.permanent = True

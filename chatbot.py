@@ -76,12 +76,11 @@ def process_chat():
             response = process_admin_query(query)
             
         # Log the chat
-        chat_log = ChatLog(
-            user_type=user_type,
-            user_id=user_id,
-            query=query,
-            response=response
-        )
+        chat_log = ChatLog()
+        chat_log.user_type = user_type
+        chat_log.user_id = user_id
+        chat_log.query = query
+        chat_log.response = response
         db.session.add(chat_log)
         db.session.commit()
         
@@ -89,25 +88,51 @@ def process_chat():
     
     except Exception as e:
         logger.error(f"Error processing chat: {str(e)}")
-        return jsonify({'error': 'An error occurred while processing your query'}), 500
+        return jsonify({'error': 'An error occurred while processing your query. Please try a different question.'}), 500
 
 def process_student_query(query, student_id):
     # Get student data
-    student = Student.query.get(student_id)
+    student = db.session.query(Student).filter(Student.id == student_id).first()
     if not student:
         return "Sorry, I couldn't find your student record."
     
-    # Tokenize the query
-    tokens = word_tokenize(query.lower())
-    stop_words = set(stopwords.words('english'))
-    filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    # Create safe tokenization with simple split for fallback
+    try:
+        # Try NLTK tokenization first
+        tokens = word_tokenize(query.lower())
+        stop_words = set(stopwords.words('english'))
+        filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    except Exception as e:
+        # Fallback to simple tokenization if NLTK fails
+        logger.error(f"NLTK tokenization failed: {str(e)}")
+        tokens = query.lower().split()
+        filtered_tokens = [word for word in tokens if len(word) > 2]
     
     # Identify entities and keywords
     keywords = set(filtered_tokens)
     
+    # Create student info dictionary manually instead of using __dict__
+    student_info = {
+        'id': student.id,
+        'serial_no': student.serial_no,
+        'roll_no': student.roll_no,
+        'name': student.name,
+        'major': student.major,
+        'current_gpa': student.current_gpa,
+        'days_present': student.days_present,
+        'total_days': student.total_days,
+        'days_absent': student.days_absent,
+        'courses': student.courses,
+        'date_of_birth': str(student.date_of_birth) if student.date_of_birth else None,
+        'gender': student.gender,
+        'father_name': student.father_name,
+        'mother_name': student.mother_name,
+        'hobbies': student.hobbies
+    }
+    
     # Prepare context
     context = {
-        "student_info": student.__dict__,
+        "student_info": student_info,
         "query": query,
         "keywords": list(keywords)
     }
@@ -170,10 +195,17 @@ def process_student_query(query, student_id):
         return "I'm sorry, I'm having trouble processing your request right now. Please try again later."
 
 def process_admin_query(query):
-    # Tokenize the query
-    tokens = word_tokenize(query.lower())
-    stop_words = set(stopwords.words('english'))
-    filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    # Create safe tokenization with simple split for fallback
+    try:
+        # Try NLTK tokenization first
+        tokens = word_tokenize(query.lower())
+        stop_words = set(stopwords.words('english'))
+        filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    except Exception as e:
+        # Fallback to simple tokenization if NLTK fails
+        logger.error(f"NLTK tokenization failed: {str(e)}")
+        tokens = query.lower().split()
+        filtered_tokens = [word for word in tokens if len(word) > 2]
     
     # Extract relevant keywords
     keywords = set(filtered_tokens)
@@ -182,7 +214,7 @@ def process_admin_query(query):
     students_data = []
     if any(word in keywords for word in ['list', 'show', 'students', 'student']):
         # Get all students
-        students = Student.query.all()
+        students = db.session.query(Student).all()
         students_data = [
             {
                 'name': student.name,

@@ -27,13 +27,13 @@ def admin_required(f):
 @admin_required
 def dashboard():
     # Get statistics for the dashboard
-    total_students = Student.query.count()
-    total_uploads = UploadedFile.query.count()
-    total_chats = ChatLog.query.count()
+    total_students = db.session.query(Student).count()
+    total_uploads = db.session.query(UploadedFile).count()
+    total_chats = db.session.query(ChatLog).count()
     
     # Get chat logs for the last 7 days
     seven_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-    recent_chats = ChatLog.query.filter(ChatLog.timestamp >= seven_days_ago).order_by(ChatLog.timestamp.desc()).all()
+    recent_chats = db.session.query(ChatLog).filter(ChatLog.timestamp >= seven_days_ago).order_by(ChatLog.timestamp.desc()).all()
     
     # Group by day
     chat_data = {}
@@ -116,7 +116,7 @@ def upload():
 @admin_bp.route('/admin/students', methods=['GET'])
 @admin_required
 def list_students():
-    students = Student.query.all()
+    students = db.session.query(Student).all()
     return jsonify([{
         'id': student.id,
         'serial_no': student.serial_no,
@@ -131,7 +131,10 @@ def list_students():
 @admin_bp.route('/admin/students/<int:student_id>', methods=['DELETE'])
 @admin_required
 def delete_student(student_id):
-    student = Student.query.get_or_404(student_id)
+    student = db.session.query(Student).filter(Student.id == student_id).first()
+    if not student:
+        return jsonify({'success': False, 'message': 'Student not found'}), 404
+        
     try:
         db.session.delete(student)
         db.session.commit()
@@ -144,7 +147,7 @@ def delete_student(student_id):
 @admin_bp.route('/admin/chatlogs', methods=['GET'])
 @admin_required
 def get_chat_logs():
-    logs = ChatLog.query.order_by(ChatLog.timestamp.desc()).all()
+    logs = db.session.query(ChatLog).order_by(ChatLog.timestamp.desc()).all()
     return jsonify([log.to_dict() for log in logs])
 
 def allowed_file(filename, allowed_extensions):

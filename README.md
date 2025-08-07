@@ -57,14 +57,12 @@ StudentDataChatbot/
 
 Open your terminal and run the following command inside your project directory:
 
-```bash
 step 1: 
 pip install flask flask-sqlalchemy flask-session flask-login flask-wtf google-generativeai pandas pdfplumber python-dotenv werkzeug email-validator nltk
 
 Step 2: ▶️ Run the App
 Navigate into the project folder and run the main application:
 
-bash
 
 cd StudentDataChatbot
 python main.py
@@ -72,7 +70,7 @@ python main.py
 Step 3: 🌐 Access in Browser
 Once running, you’ll see output like this:
 
-bash
+
  * Running on all addresses (0.0.0.0)
  * Running on http://127.0.0.1:5000
  * Running on http://10.16.198.150:5000

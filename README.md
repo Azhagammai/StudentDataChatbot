@@ -53,11 +53,7 @@ StudentDataChatbot/
 
 ## 🛠️ Setup Instructions
 
-### Step 1: 📦 Install Dependencies
-
-Open your terminal and run the following command inside your project directory:
-
-step 1: 
+step 1:  📦 Install Dependencies
 pip install flask flask-sqlalchemy flask-session flask-login flask-wtf google-generativeai pandas pdfplumber python-dotenv werkzeug email-validator nltk
 
 Step 2: ▶️ Run the App

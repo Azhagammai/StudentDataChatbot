@@ -60,7 +60,7 @@ pip install flask flask-sqlalchemy flask-session flask-login flask-wtf google-ge
 Step 2: ▶️ Run the App
 Navigate into the project folder and run the main application:
 ```bash
-cd StudentDataOriganizer
+cd StudentDataOrganizer
 python main.py
 ```
 

@@ -53,7 +53,7 @@ StudentDataChatbot/
 
 ## 🛠️ Setup Instructions
 
-step 1:  📦 Install Dependencies
+Step 1:  📦 Install Dependencies
 pip install flask flask-sqlalchemy flask-session flask-login flask-wtf google-generativeai pandas pdfplumber python-dotenv werkzeug email-validator nltk
 
 Step 2: ▶️ Run the App

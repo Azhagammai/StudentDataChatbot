@@ -32,6 +32,7 @@ EduBot is a smart assistant that helps manage student information using a chatbo
 
 ## 🗂️ Project Structure
 
+```bash
 StudentDataChatbot/
 │
 ├── .env # Environment variables

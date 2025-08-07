@@ -48,7 +48,7 @@ StudentDataChatbot/
 ├── uploads/ # Uploaded PDF files
 └── README.md # Project description
 
-
+```
 ---
 
 ## 🛠️ Setup Instructions

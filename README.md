@@ -1,7 +1,4 @@
-# 🎓 AI-Powered Student Data Chatbot
-
-EduBot is a smart assistant that helps manage student information using a chatbot interface. Built using Python and Flask, it allows admins to interact with student data easily using conversational commands. The goal is to bring automation and convenience into educational data management.
-
+# 🎓 Student Data Chatbot
 ---
 
 ## 🔥 Key Features

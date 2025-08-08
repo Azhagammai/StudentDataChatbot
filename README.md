@@ -1,4 +1,4 @@
-# 🎓 Student Data Chatbot
+# 🎓 Student Data Organizer
 ---
 
 ## 🔥 Key Features

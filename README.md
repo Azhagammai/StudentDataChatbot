@@ -76,3 +76,21 @@ Once running, you’ll see output like this:
 Open your browser and visit:
 
 http://127.0.0.1:5000
+
+---
+## 📸 SnapShot 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/47651b7c-21df-4ae5-bb3d-95a97a9f9f8b" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/79f1b4ad-9c99-4e72-96f1-6dec572a58d3" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/02df1b1d-e271-4b2b-abc8-f89f8f4f2991" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/9d26b9ef-0c26-443a-83ae-d972564e85ee" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/14c77d4d-08aa-4406-b08b-41431b7acdf9" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e11e3b2d-aceb-443f-a5f6-f466b8748ad7" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a6939f41-c0db-40c2-8fdc-fec46c58d15a" />
+
+
+
+
+
+
+
+
